@@ -82,9 +82,15 @@ public:
 
 		istringstream s(equation);
 		while (s >> coef >> exp){
-			sort(coef, exp);
+			if (coef == 0){
+				sort(0, 0);
+			}
+			else{
+				sort(coef, exp);
+			}
+			simpl();
 		}
-		simpl();
+
 		print();
 	}
 
@@ -110,53 +116,55 @@ public:
 
 	void simpl(){
 		node<int>* tmp = head;
-		node<int>* holder = head->getNext();
+		node<int>* current = head->getNext();
+		node<int>* current_next = head->getNext()->getNext();
 		node<int>* nNode;
 
-		int c = 0;
-		int e = 0;
-		if (holder == nullptr){
-			return;
-		}
+		int c;
+		int e;
 
-		while (holder->getNext() != nullptr){
 
-			if (holder->getExp() == holder->getNext()->getExp()){
-				c = holder->getCoef() + holder->getNext()->getCoef();
-				e = holder->getExp();
+		while (current_next != nullptr){
+
+			if (current->getExp() == current_next->getExp()){
+				c = current->getCoef() + current_next->getCoef();
+				e = current->getExp();
 				nNode = new node<int>(c, e);
-				nNode->setNext(holder->getNext()->getNext());
+				nNode->setNext(current_next->getNext());
 				tmp->setNext(nNode);
 
 
 			}
+			else{
+				tmp = tmp->getNext();
+				current = current->getNext();
+			}
 
-			holder = holder->getNext();
+			current_next = current_next->getNext();
+
+
+
 		}
-
-
 	}
 
 	void sort(T coef, T exp){
+
 		node<int> *tmp = head;
 
 		node<int> *nNode;
 		nNode = new node<int>(coef, exp);
-		while (tmp->getNext() != nullptr&& tmp->getNext()->getExp() < nNode->getExp()){
+		while (tmp->getNext() != nullptr&& tmp->getNext()->getExp() > nNode->getExp()){
 			tmp = tmp->getNext();
 		}
 
 		nNode->setNext(tmp->getNext());
 		tmp->setNext(nNode);
 
-
 	}
-
 
 
 	void print(){
 		node<int>* temp = head;
-
 		while (temp->getNext() != nullptr){
 			temp = temp->getNext();
 			cout << temp->getCoef() << "^" << temp->getExp() << " ";
