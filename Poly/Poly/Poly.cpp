@@ -8,6 +8,7 @@ using namespace std;
 
 template<class T>
 class node{
+
 private:
 	T coef;
 	T exp;
@@ -45,11 +46,6 @@ public:
 	void setExp(T i){
 		exp = i;
 	}
-	/*
-	node* &getNext(){
-	return Next;
-	}
-	*/
 	node* getNext(){
 		return Next;
 	}
@@ -62,6 +58,8 @@ public:
 
 template<typename T>
 class Polynomial{
+	friend ostream& operator<< <T> (ostream& os, const Polynomial<T> s);
+	friend class node<T>;
 private:
 	node<int> *head;
 	node<int> *dummy;
@@ -99,62 +97,110 @@ public:
 				sort(coef, exp);
 			}
 		}
-		print();
+
+	}
+
+	Polynomial(const Polynomial& src){
+		return *this;
+	}
+	Polynomial& operator=(const Polynomial &s){
+		node<int> * tmp = s.head;
+		node<int> * two = head;
+		if (tmp->getNext() == nullptr){
+			s.Delete();
+			two = tmp;
+		}
+		while (tmp->getNext() != nullptr){
+			tmp->setNext(two->getNext());
+			two->setNext(tmp);
+		}
+		return *this;
 	}
 
 
-	//	Polynomial(const Polynomial& src){}
+	Polynomial& operator+(const Polynomial &s){
+		node<int> * one = s.head;
+		node<int> * two = this->head;
+		while (one->getNext() != nullptr){
+			if (two->getExp() == one->getExp()){
+				two->setCoef(two->getCoef() - one->getCoef());
+			}
+			one = one->getNext();
 
-	//	Polyn
-	//	Polynomial	operator+(Polynomial& s){}
+		}
 
-	//	Polynomial	operator-(){}
+		return *this;
+	}
+
+	Polynomial operator-(const Polynomial s){
+		cout << "hello";
+		node<int> * one = s.head->getNext();
+		node<int> * two = head->getNext();
+		node<int> *nNode;
+		int c;
+		int e;
+		while (one != nullptr){
+			if (two->getExp() == one->getExp()){
+				c = two->getCoef() - one->getCoef();
+				e = two->getExp();
+				nNode = new node<int>(c, e);
+				nNode->setNext(two->getNext());
+				two->setNext(nNode);
+			}
+
+
+			one = one->getNext();
+			two = two->getNext();
+
+		}
+
+		return *this;
+	}
 
 	//	Polynomial	operator*(){}
 
-	//	Polynomial	operator=(){}
-
-	//	Polynomial	operator<<(){}
 
 
 
-	void simpl(){
-		node<int>* tmp = head;
-		node<int>* current = head->getNext();
-		node<int>* current_next = head->getNext()->getNext();
-		node<int>* nNode;
 
-		int c;
-		int e;
-		while (current_next != nullptr){
-			if (current->getExp() == current_next->getExp()){
-				c = current->getCoef() + current_next->getCoef();
-				e = current->getExp();
-				nNode = new node<int>(c, e);
-				nNode->setNext(current_next->getNext());
-				tmp->setNext(nNode);
-			}
-			else{
-				tmp = tmp->getNext();
-				current = current->getNext();
-			}
-			current_next = current_next->getNext();
+
+private:	void simpl(){
+	node<int>* tmp = head;
+	node<int>* current = head->getNext();
+	node<int>* current_next = head->getNext()->getNext();
+	node<int>* nNode;
+
+	int c;
+	int e;
+	while (current_next != nullptr){
+		if (current->getExp() == current_next->getExp()){
+			c = current->getCoef() + current_next->getCoef();
+			e = current->getExp();
+			nNode = new node<int>(c, e);
+			nNode->setNext(current_next->getNext());
+			tmp->setNext(nNode);
 		}
-	}
-
-	void sort(T coef, T exp){
-		node<int> *tmp = head;
-		node<int> *nNode;
-		nNode = new node<int>(coef, exp);
-		while (tmp->getNext() != nullptr&& tmp->getNext()->getExp() > nNode->getExp()){
+		else{
 			tmp = tmp->getNext();
+			current = current->getNext();
 		}
-		nNode->setNext(tmp->getNext());
-		tmp->setNext(nNode);
-		simpl();
+		current_next = current_next->getNext();
 	}
+}
 
+			void sort(T coef, T exp){
+				node<int> *tmp = head;
+				node<int> *nNode;
+				nNode = new node<int>(coef, exp);
+				while (tmp->getNext() != nullptr&& tmp->getNext()->getExp() > nNode->getExp()){
+					tmp = tmp->getNext();
+				}
+				nNode->setNext(tmp->getNext());
+				tmp->setNext(nNode);
+				simpl();
+			}
 
+public:
 	void print(){
 		node<int>* temp = head;
 		while (temp->getNext() != nullptr){
@@ -164,66 +210,38 @@ public:
 	}
 
 
-	void Delete() //Deletes the element that user asked
+	void Delete()
 	{
 		node<int>* current = head;
 		node<int>* previous;
-		while (current->getNext() != nullptr) { // while current next node is not nullptr
-			previous = current; // make previos node be current
-			current = current->getNext(); //make current to equal the next node
-			previous->setNext(current->getNext()); // skipping over the
-
-
+		while (current->getNext() != nullptr) {
+			previous = current;
+			current = current->getNext();
+			previous->setNext(current->getNext());
 
 		}
 	}
+	node<T>* getHead(){
+		return head;
+	}
 
 };
+template<typename T>
+ostream& operator<<(ostream& os, Polynomial<T> *s){
+	node<int>* temp = s->getHead();
+	while (temp->getNext() != nullptr){
+		temp = temp->getNext();
+		cout << temp->getCoef() << "^" << temp->getExp() << " ";
+	}
+
+	return os;
+}
 
 
-/*
-template<class T>
-void print_list(node<T>* p){
-
-while (p){
-cout << p->getData() << " ";
-p = p->Next();
-}
-cout << endl;
-}
-
-node<int>* make_int_list(int n){
-if (n <= 0) return 0;
-node<int>* first, *p, *q;
-first = p = new node<int>(1);
-for (int i = 2; i <= n; i++){
-q = new node<int>(i);
-p->getNext() = q;
-p = q;
-}
-return first;
-}
-
-template<class T>
-void print_list_rec(node<T>* p){
-if (p == 0) return;
-cout << p->getData() << " ";
-print_list_rec(p->getNext());
-}
-/*
-template<class T>
-void add_at_end(node<T>* &first, node<T>*r){
-node<T>* p;
-p = first;
-while (p->getNext()){
-p = p->getNext();
-}
-p->getNext() = r;
-}
-*/
 void create(ifstream &inFile){
-	Polynomial<int> *one;
-	Polynomial<int> *two;
+	Polynomial<int> *one = new Polynomial<int>;
+	Polynomial<int> *two = new Polynomial<int>;
+	Polynomial<int> * tmp = new Polynomial<int>;
 	string *line;
 	string getl;
 	int z = 0;
@@ -231,48 +249,29 @@ void create(ifstream &inFile){
 		getline(inFile, getl);
 		line = new string[1];
 		if (z % 2 == 0){
-
-			for (int i = 0; i <= 0; i++)
-			{
-				line[i] = getl;
-			}
+			line[0] = getl;
 			one = new Polynomial<int>(line[0]);
 			cout << endl;
 		}
 		else{
-			for (int i = 0; i <= 0; i++)
-			{
-				line[i] = getl;
-			}
+			line[0] = getl;
 			two = new Polynomial<int>(line[0]);
-			cout << endl;
+
+			//	cout << tmp;
+			one - two;
+
 		}
+
 		line->clear();
 		z++;
 	}
+
 }
 
 int main(int argc, char *argv[])
 {
 
-	/*
-	//create and print a list of n integer nodes
-	int n;
-	cout << "How many nodes? ";
-	cin >> n;
-	cout << endl;
-	print_list<int>(make_int_list(n));
-	cout << endl;
-	//now do it recursively
-	print_list_rec<int>(make_int_list(n));
-	cout << endl;
-	node<int>* a = make_int_list(9);
-	node<int>* b = new node<int>(56);
-	add_at_end(a, b);
-	cout << endl;
-	print_list<int>(a);
 
-	*/
 
 	if (argc != 2)
 		cout << "usage: " << argv[0] << " <filename>\n";
