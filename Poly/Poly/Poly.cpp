@@ -69,12 +69,22 @@ private:
 	int exp;
 	int c;
 	int e;
+
 public:
 	Polynomial(){
 		dummy = new node<int>(9999, 9999);
 		head = dummy;
 	}
-	~Polynomial(){}
+
+	~Polynomial(){
+		node<int> *temp = head;
+		while (temp->getNext() != nullptr)
+		{
+			temp = head->getNext();
+			delete head;
+			head = temp;
+		}
+	}
 
 	Polynomial(string equation){
 		dummy = new node<int>(9999, 9999);
@@ -88,9 +98,7 @@ public:
 			else{
 				sort(coef, exp);
 			}
-			simpl();
 		}
-
 		print();
 	}
 
@@ -99,10 +107,6 @@ public:
 
 	//	Polyn
 	//	Polynomial	operator+(Polynomial& s){}
-
-
-
-
 
 	//	Polynomial	operator-(){}
 
@@ -122,44 +126,32 @@ public:
 
 		int c;
 		int e;
-
-
 		while (current_next != nullptr){
-
 			if (current->getExp() == current_next->getExp()){
 				c = current->getCoef() + current_next->getCoef();
 				e = current->getExp();
 				nNode = new node<int>(c, e);
 				nNode->setNext(current_next->getNext());
 				tmp->setNext(nNode);
-
-
 			}
 			else{
 				tmp = tmp->getNext();
 				current = current->getNext();
 			}
-
 			current_next = current_next->getNext();
-
-
-
 		}
 	}
 
 	void sort(T coef, T exp){
-
 		node<int> *tmp = head;
-
 		node<int> *nNode;
 		nNode = new node<int>(coef, exp);
 		while (tmp->getNext() != nullptr&& tmp->getNext()->getExp() > nNode->getExp()){
 			tmp = tmp->getNext();
 		}
-
 		nNode->setNext(tmp->getNext());
 		tmp->setNext(nNode);
-
+		simpl();
 	}
 
 
@@ -169,13 +161,11 @@ public:
 			temp = temp->getNext();
 			cout << temp->getCoef() << "^" << temp->getExp() << " ";
 		}
-
 	}
 
 
 	void Delete() //Deletes the element that user asked
 	{
-
 		node<int>* current = head;
 		node<int>* previous;
 		while (current->getNext() != nullptr) { // while current next node is not nullptr
@@ -260,8 +250,6 @@ void create(ifstream &inFile){
 		line->clear();
 		z++;
 	}
-
-
 }
 
 int main(int argc, char *argv[])
